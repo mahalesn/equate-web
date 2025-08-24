@@ -39,13 +39,17 @@ export function Keypad(props: {
       {Digit('3')}
       {Op('−')}
       {Digit('0')}
+      {Op('²')}
+      {Op('³')}
+      {Op('+')}
+      {Op('√')}
+      {Op('∛')}
       <button className="btn util" onClick={props.onBack}>
         ⌫
       </button>
       <button className="btn util" onClick={props.onClear}>
         C
       </button>
-      {Op('+')}
     </div>
   )
 }

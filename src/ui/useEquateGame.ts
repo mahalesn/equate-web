@@ -62,7 +62,7 @@ export function useEquateGame() {
     return /[0-9]/.test(ch)
   }
   function isOp(ch: string) {
-    return /[+\-*/]/.test(ch)
+    return /[+\-*/√∛]/.test(ch)
   }
   function canAppendDigit(s: string) {
     const lc = lastChar(s)
@@ -99,9 +99,39 @@ export function useEquateGame() {
   )
   const onOp = useCallback(
     (pretty: string) => {
-      const m: Record<string, string> = { '×': '*', '÷': '/', '−': '-', '+': '+' }
-      const op = m[pretty] ?? pretty
       const s = getExpr()
+      
+      // Handle special cases for unary operators
+      if (pretty === '²') {
+        // Square operator - append to current expression (postfix)
+        setExpr(s + '^2')
+        return
+      }
+      if (pretty === '³') {
+        // Cube operator - append to current expression (postfix)
+        setExpr(s + '^3')
+        return
+      }
+      if (pretty === '√') {
+        // Square root - prefix operator
+        setExpr(s + '√')
+        return
+      }
+      if (pretty === '∛') {
+        // Cube root - prefix operator
+        setExpr(s + '∛')
+        return
+      }
+      
+      // Handle binary operators
+      const m: Record<string, string> = { 
+        '×': '*', 
+        '÷': '/', 
+        '−': '-', 
+        '+': '+'
+      }
+      const op = m[pretty] ?? pretty
+      
       if (!canAppendOp(s, op)) return
       setExpr(s + op)
     },
@@ -134,11 +164,11 @@ export function useEquateGame() {
     setExpr('')
   }, [active, getExpr, setExpr])
   const leftExprPretty = useMemo(
-    () => leftExpr.replaceAll('*', '×').replaceAll('/', '÷'),
+    () => leftExpr.replace(/\*/g, '×').replace(/\//g, '÷').replace(/\^2/g, '²').replace(/\^3/g, '³'),
     [leftExpr]
   )
   const rightExprPretty = useMemo(
-    () => rightExpr.replaceAll('*', '×').replaceAll('/', '÷'),
+    () => rightExpr.replace(/\*/g, '×').replace(/\//g, '÷').replace(/\^2/g, '²').replace(/\^3/g, '³'),
     [rightExpr]
   )
   function safeEval(s: string): Frac | null {
@@ -158,7 +188,8 @@ export function useEquateGame() {
   const leftReady = !!leftVal
   const rightReady = !!rightVal
   const equal = leftReady && rightReady && approxEqualFrac(leftVal!, rightVal!)
-  const win = equal && !!leftExpr && !!rightExpr
+  const allDigitsConsumed = Object.keys(leftRemain).length === 0 && Object.keys(rightRemain).length === 0
+  const win = equal && !!leftExpr && !!rightExpr && allDigitsConsumed
   const [winTick, setWinTick] = useState(false)
   useEffect(() => {
     if (win) {

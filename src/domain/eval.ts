@@ -19,5 +19,18 @@ export function evaluate(node: Node): Frac {
         return l.div(r)
     }
   }
+  if (node.type === 'unary') {
+    const operand = evaluate(node.operand)
+    switch (node.op) {
+      case 'sq':
+        return operand.pow(2)
+      case 'cb':
+        return operand.pow(3)
+      case 'sqrt':
+        return operand.sqrt()
+      case 'cbrt':
+        return operand.cbrt()
+    }
+  }
   throw new Error('bad node')
 }

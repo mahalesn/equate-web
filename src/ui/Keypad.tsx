@@ -33,23 +33,23 @@ export function Keypad(props: {
       {Digit('4')}
       {Digit('5')}
       {Digit('6')}
-      {Op('×')}
+      {Op('×', '*')}
       {Digit('1')}
       {Digit('2')}
       {Digit('3')}
       {Op('−')}
       {Digit('0')}
-      {Op('²')}
-      {Op('³')}
-      {Op('+')}
-      {Op('√')}
-      {Op('∛')}
       <button className="btn util" onClick={props.onBack}>
         ⌫
       </button>
       <button className="btn util" onClick={props.onClear}>
         C
       </button>
+      {Op('+')}
+      {Op('²', '𝑥²')}
+      {Op('³', '𝑥³')}
+      {Op('√', '√𝑥')}
+      {Op('∛', '∛𝑥')}
     </div>
   )
 }

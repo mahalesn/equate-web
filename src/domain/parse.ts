@@ -16,10 +16,13 @@ export function parse(src: string): Node {
 
   function popOp() {
     const op = ops.pop()!
-    const r = output.pop() as Node
-    const l = output.pop() as Node
     if (op.t === 'op') {
+      const r = output.pop() as Node
+      const l = output.pop() as Node
       output.push({ type: 'bin', op: op.v, left: l, right: r } as Node)
+    } else if (op.t === 'unary') {
+      const operand = output.pop() as Node
+      output.push({ type: 'unary', op: op.v, operand })
     }
   }
 
@@ -59,30 +62,19 @@ export function parse(src: string): Node {
       ops.push(t)
     } else if (t.t === 'rp') {
       while (ops.length && ops[ops.length - 1].t !== 'lp') {
-        const op = ops.pop()!
-        if (op.t === 'unary') {
-          const operand = output.pop() as Node
-          output.push({ type: 'unary', op: op.v, operand })
-        } else {
-          popOp()
-        }
+        popOp()
       }
       if (!ops.length) throw new Error('mismatched )')
       ops.pop()
     }
   }
-  // Handle any remaining unary operators first
+  // Handle any remaining operators
   while (ops.length) {
     const t = ops.pop()!
     if (t.t === 'lp') throw new Error('mismatched (')
-    if (t.t === 'unary') {
-      const operand = output.pop() as Node
-      output.push({ type: 'unary', op: t.v, operand })
-    } else if (t.t === 'op') {
-      const r = output.pop() as Node
-      const l = output.pop() as Node
-      output.push({ type: 'bin', op: t.v, left: l, right: r } as Node)
-    }
+    // Put the operator back and use popOp to handle it properly
+    ops.push(t)
+    popOp()
   }
   if (output.length !== 1) throw new Error('invalid expression')
   return output[0] as Node

@@ -152,4 +152,93 @@ describe('new operators: square, cube, square root, cube root', () => {
     expect(val('2/2').toString()).toBe('1')
   })
 
+  it('handles sophisticated parentheses expressions', () => {
+    // Complex addition: ∛8 = 2, so 23 + ∛8 = 25, and √25 = 5
+    expect(val('√(23+∛8)').toString()).toBe('5')
+    
+    // Pythagorean theorem: √(3²+4²) = √(9+16) = √25 = 5
+    expect(val('√(3^2+4^2)').toString()).toBe('5')
+    
+    // Nested with powers: (√4)³ = 2³ = 8
+    expect(val('(√4)^3').toString()).toBe('8')
+    
+    // Error case: √(∛8+√9) = √(2+3) = √5 should fail (not perfect square)
+    expect(() => val('√(∛8+√9)')).toThrow()
+  })
+
+  it('fixes parentheses evaluation bug: (√9) should evaluate like √9', () => {
+    // Bug fix: parentheses around single terms should evaluate properly
+    expect(val('√9').toString()).toBe('3')
+    expect(val('(√9)').toString()).toBe('3')
+    expect(val('(∛8)').toString()).toBe('2')
+    expect(val('(5)').toString()).toBe('5')
+  })
+
+})
+
+describe('6-digit puzzle generation', () => {
+  // Helper function to parse puzzle string into digits
+  function parseDigits(puzzle: string): number[] {
+    return puzzle.split('').map(d => parseInt(d))
+  }
+  
+  // Helper function to validate puzzle rules
+  function validatePuzzleRules(puzzle: string): boolean {
+    const digits = parseDigits(puzzle)
+    
+    // Rule 1: Must be 6 digits
+    if (digits.length !== 6) return false
+    
+    // Rule 2: No leading zero
+    if (digits[0] === 0) return false
+    
+    // Rule 3: At most one zero, and not in first position
+    const zeroCount = digits.filter(d => d === 0).length
+    if (zeroCount > 1) return false
+    
+    // Rule 4: At most one digit may repeat, and if it repeats, exactly twice
+    const digitCounts = new Map<number, number>()
+    for (const digit of digits) {
+      digitCounts.set(digit, (digitCounts.get(digit) || 0) + 1)
+    }
+    
+    let repeatedDigits = 0
+    for (const [_, count] of digitCounts) {
+      if (count > 2) return false // No digit appears 3+ times
+      if (count === 2) repeatedDigits++
+    }
+    
+    return repeatedDigits <= 1 // At most one digit may repeat
+  }
+
+  it('validates puzzle rules correctly', () => {
+    // Valid examples:
+    expect(validatePuzzleRules('123456')).toBe(true) // All unique digits
+    expect(validatePuzzleRules('112345')).toBe(true) // One repeated digit (1 appears twice)
+    expect(validatePuzzleRules('123405')).toBe(true) // One zero, not leading
+    expect(validatePuzzleRules('998765')).toBe(true) // One repeated digit (9 appears twice)
+    
+    // Invalid examples:
+    expect(validatePuzzleRules('012345')).toBe(false) // Leading zero
+    expect(validatePuzzleRules('123400')).toBe(false) // Two zeros
+    expect(validatePuzzleRules('111234')).toBe(false) // Digit appears 3 times
+    expect(validatePuzzleRules('112233')).toBe(false) // Two different digits repeat
+  })
+
+  it('validates individual puzzle rule components', () => {
+    // Test rule 2: No leading zero
+    expect(validatePuzzleRules('012345')).toBe(false)
+    expect(validatePuzzleRules('123450')).toBe(true)
+    
+    // Test rule 3: At most one zero
+    expect(validatePuzzleRules('100234')).toBe(false)
+    expect(validatePuzzleRules('102340')).toBe(false) 
+    expect(validatePuzzleRules('120345')).toBe(true)
+    
+    // Test rule 4: Repetition limits
+    expect(validatePuzzleRules('111234')).toBe(false) // 3 times
+    expect(validatePuzzleRules('112234')).toBe(false) // Two digits repeat
+    expect(validatePuzzleRules('112345')).toBe(true)  // One digit repeats twice
+    expect(validatePuzzleRules('123456')).toBe(true)  // No repeats
+  })
 })

@@ -35,7 +35,7 @@ export default function App() {
           <div className={rightClass}>{g.rightValueStr || ' '}</div>
         </div>
         {/* Expression row with '=' in between and refresh aligned to right slot edge */}
-        <div className="slots">
+        <div className={'slots' + (g.equal && g.leftExpr && g.rightExpr ? ' matched' : '')}>
           <ExprSlot
             selected={g.active === 'left'}
             placeholder="Left Expr"
@@ -48,8 +48,13 @@ export default function App() {
             text={g.rightExprPretty}
             onClick={() => g.setActive('right')}
           />
-          <div className="exprEq" aria-hidden="true">
-            =
+          <div className={
+            'exprEq ' + 
+            (g.equal && g.leftExpr && g.rightExpr ? 'equal' : 
+             g.leftExpr || g.rightExpr ? 'not-equal' : 'neutral')
+          } aria-hidden="true">
+            {g.equal && g.leftExpr && g.rightExpr ? '=' : 
+             g.leftExpr || g.rightExpr ? '≠' : '='}
           </div>
         </div>
         <Keypad
@@ -57,12 +62,7 @@ export default function App() {
           isDigitAllowed={g.isDigitAllowed}
           onDigit={g.onDigit}
           onOp={g.onOp}
-          onBack={g.onBack}
-          onClear={g.onClear}
         />
-        <div className={'bigTick' + (g.winTick ? ' show' : '')}>
-          <div className="mark">✓</div>
-        </div>
       </main>
     </>
   )

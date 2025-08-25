@@ -167,9 +167,47 @@ main {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  color: var(--muted);
   font-size: 22px;
   pointer-events: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+  z-index: 1;
+}
+
+.slots .exprEq.neutral {
+  color: var(--muted);
+}
+
+.slots .exprEq.not-equal {
+  color: var(--err);
+}
+
+.slots .exprEq.equal {
+  color: var(--ok);
+}
+
+/* Green glow animation when expressions match */
+.slots.matched .slot {
+  animation: successGlow 1.5s ease-out;
+}
+
+@keyframes successGlow {
+  0% {
+    box-shadow: 0 0 0 rgba(52, 199, 89, 0);
+    border-color: var(--line);
+  }
+  30% {
+    box-shadow: 0 0 20px rgba(52, 199, 89, 0.6), 0 0 40px rgba(52, 199, 89, 0.3);
+    border-color: var(--ok);
+  }
+  70% {
+    box-shadow: 0 0 15px rgba(52, 199, 89, 0.4), 0 0 30px rgba(52, 199, 89, 0.2);
+    border-color: var(--ok);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(52, 199, 89, 0);
+    border-color: var(--line);
+  }
 }
 
 /* Refresh icon positioned at right edge of the Right Expression box */
@@ -183,12 +221,14 @@ main {
 /* Keypad */
 .pad {
   display: grid;
-  grid-template-columns: repeat(4, 84px);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin-top: 2px;
+  width: 100%;
+  max-width: 528px;
 }
 .btn {
-  height: 72px;
+  height: 56px;
   border: none;
   border-radius: 12px;
   font-size: 20px;
@@ -207,10 +247,10 @@ main {
   font-weight: 600;
 }
 
-/* Allowed digits pop (white + bolder) */
+/* Allowed digits pop (blue background) */
 .btn.num.allowed {
-  color: #eeeeeeee;
-  background: var(--util);
+  color: white;
+  background: var(--op);
   font-weight: 700;
 }
 
@@ -222,85 +262,24 @@ main {
 }
 
 .btn.op {
-  background: var(--op);
+  background: var(--tile);
+  border: 2px solid var(--op);
+  color: white;
 }
 .btn.util {
   background: var(--util);
 }
 
-/* Tick overlay */
-.bigTick {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  opacity: 0;
-  background: rgba(0, 0, 0, 0.55);
-}
-.bigTick .mark {
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  border: 8px solid var(--ok);
-  color: var(--ok);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 140px;
-  transform: scale(0.6);
-  box-shadow: 0 0 60px rgba(52, 199, 89, 0.35);
-}
-.bigTick.show {
-  animation: overlayFade 1.1s ease-out forwards;
-}
-.bigTick.show .mark {
-  animation: markPop 0.9s cubic-bezier(0.2, 1.2, 0.2, 1) forwards;
-}
-@keyframes overlayFade {
-  0% {
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes markPop {
-  0% {
-    transform: scale(0.6);
-  }
-  30% {
-    transform: scale(1.15);
-  }
-  60% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(0.98);
-  }
-}
 
 @media (max-width: 500px) {
   .pad {
-    grid-template-columns: repeat(4, 72px);
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
+    max-width: calc(100vw - 32px);
   }
   .btn {
-    height: 64px;
+    height: 48px;
     font-size: 18px;
-  }
-  .bigTick .mark {
-    width: 180px;
-    height: 180px;
-    font-size: 110px;
-    border-width: 6px;
   }
   :root {
     --slot-min: 160px;

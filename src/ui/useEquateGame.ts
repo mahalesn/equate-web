@@ -4,17 +4,78 @@ import { parse } from '../domain/parse'
 import { evaluate } from '../domain/eval'
 import { approxEqualFrac } from '../domain/util'
 
-function randomPuzzle(len = 4) {
-  let s = ''
-  for (let i = 0; i < len; i++) {
-    const d = i === 0 ? 1 + Math.floor(Math.random() * 9) : Math.floor(Math.random() * 10)
-    s += String(d)
+function randomPuzzle(len = 6) {
+  if (len !== 6) {
+    // Fallback for non-6 digit requests
+    let s = ''
+    for (let i = 0; i < len; i++) {
+      const d = i === 0 ? 1 + Math.floor(Math.random() * 9) : Math.floor(Math.random() * 10)
+      s += String(d)
+    }
+    return s
   }
-  return s
+
+  // Generate 6-digit puzzle with sophisticated rules
+  let attempts = 0
+  const maxAttempts = 1000
+  
+  while (attempts < maxAttempts) {
+    attempts++
+    
+    // Generate 6 random digits
+    const digits: number[] = []
+    
+    // First digit: 1-9 (no leading zero)
+    digits.push(1 + Math.floor(Math.random() * 9))
+    
+    // Remaining 5 digits: 0-9
+    for (let i = 1; i < 6; i++) {
+      digits.push(Math.floor(Math.random() * 10))
+    }
+    
+    // Check constraints
+    if (!isValidPuzzle(digits)) {
+      continue
+    }
+    
+    return digits.join('')
+  }
+  
+  // Fallback if we can't generate a valid puzzle
+  return '123456'
+}
+
+function isValidPuzzle(digits: number[]): boolean {
+  // Rule 1: 6 digits (already ensured by generation)
+  // Rule 2: No leading zero (already ensured by generation)
+  
+  // Rule 3: At most one zero, and not in first position
+  const zeroCount = digits.filter(d => d === 0).length
+  if (zeroCount > 1) return false
+  
+  // Rule 4: At most one digit may repeat, and if it repeats, appears exactly twice
+  const digitCounts = new Map<number, number>()
+  for (const digit of digits) {
+    digitCounts.set(digit, (digitCounts.get(digit) || 0) + 1)
+  }
+  
+  let repeatedDigits = 0
+  for (const [digit, count] of digitCounts) {
+    if (count > 2) return false // No digit appears 3+ times
+    if (count === 2) repeatedDigits++
+  }
+  
+  if (repeatedDigits > 1) return false // At most one digit may repeat
+  
+  // Rule 5: Triplet equivalence - this is handled by the generation being random
+  // The constraint is about not double-counting equivalent puzzles, which doesn't 
+  // affect individual puzzle generation, just the theoretical count of unique puzzles
+  
+  return true
 }
 type Side = 'left' | 'right'
 export function useEquateGame() {
-  const [puzzle, setPuzzle] = useState('9823')
+  const [puzzle, setPuzzle] = useState(() => randomPuzzle(6))
   const half = Math.floor(puzzle.length / 2)
   const leftSet = useMemo(() => puzzle.slice(0, half).split(''), [puzzle])
   const rightSet = useMemo(() => puzzle.slice(half).split(''), [puzzle])
@@ -62,16 +123,19 @@ export function useEquateGame() {
     return /[0-9]/.test(ch)
   }
   function isOp(ch: string) {
-    return /[+\-*/√∛]/.test(ch)
+    return /[+\-*/√∛()^]/.test(ch)
   }
   function canAppendDigit(s: string) {
     const lc = lastChar(s)
-    return !lc || !isDigit(lc)
+    return !lc || (!isDigit(lc) && lc !== ')' && lc !== '²' && lc !== '³')
   }
   function canAppendOp(s: string, op: string) {
-    if (!s) return op === '-'
+    if (!s) return op === '-' || op === '(' || op === '√' || op === '∛'
     const lc = lastChar(s)
-    if (isOp(lc)) return false
+    if (op === '(') return !isDigit(lc) && lc !== ')'
+    if (op === ')') return isDigit(lc) || lc === ')'
+    if (op === '√' || op === '∛') return !isDigit(lc) && lc !== ')'
+    if (isOp(lc) && lc !== ')') return false
     return true
   }
   const onDigit = useCallback(
@@ -101,6 +165,13 @@ export function useEquateGame() {
     (pretty: string) => {
       const s = getExpr()
       
+      // Handle parentheses
+      if (pretty === '(' || pretty === ')') {
+        if (!canAppendOp(s, pretty)) return
+        setExpr(s + pretty)
+        return
+      }
+      
       // Handle special cases for unary operators
       if (pretty === '²') {
         // Square operator - append to current expression (postfix)
@@ -114,11 +185,13 @@ export function useEquateGame() {
       }
       if (pretty === '√') {
         // Square root - prefix operator
+        if (!canAppendOp(s, pretty)) return
         setExpr(s + '√')
         return
       }
       if (pretty === '∛') {
         // Cube root - prefix operator
+        if (!canAppendOp(s, pretty)) return
         setExpr(s + '∛')
         return
       }
@@ -137,9 +210,17 @@ export function useEquateGame() {
     },
     [getExpr, setExpr]
   )
+  
   const onBack = useCallback(() => {
     const s = getExpr()
     if (!s) return
+    
+    // Handle power operators (^2, ^3) as single units
+    if (s.endsWith('^2') || s.endsWith('^3')) {
+      setExpr(s.slice(0, -2))
+      return
+    }
+    
     const removed = s.slice(-1)
     setExpr(s.slice(0, -1))
     if (isDigit(removed)) {
@@ -150,6 +231,7 @@ export function useEquateGame() {
       }
     }
   }, [active, getExpr, setExpr])
+  
   const onClear = useCallback(() => {
     const s = getExpr()
     for (const ch of s) {
@@ -164,16 +246,18 @@ export function useEquateGame() {
     setExpr('')
   }, [active, getExpr, setExpr])
   const leftExprPretty = useMemo(
-    () => leftExpr.replace(/\*/g, '×').replace(/\//g, '÷').replace(/\^2/g, '²').replace(/\^3/g, '³'),
+    () => leftExpr.replace(/\//g, '÷').replace(/\^2/g, '²').replace(/\^3/g, '³'),
     [leftExpr]
   )
   const rightExprPretty = useMemo(
-    () => rightExpr.replace(/\*/g, '×').replace(/\//g, '÷').replace(/\^2/g, '²').replace(/\^3/g, '³'),
+    () => rightExpr.replace(/\//g, '÷').replace(/\^2/g, '²').replace(/\^3/g, '³'),
     [rightExpr]
   )
   function safeEval(s: string): Frac | null {
     if (!s) return null
-    if (isOp(lastChar(s))) return null
+    const lc = lastChar(s)
+    // Check if expression ends with an incomplete operator (but not closing parenthesis)
+    if (lc && /[+\-*/√∛^]/.test(lc)) return null
     try {
       const ast = parse(s)
       return evaluate(ast)
@@ -209,6 +293,11 @@ export function useEquateGame() {
         e.preventDefault()
         return
       }
+      if (e.key === '(' || e.key === ')') {
+        onOp(e.key)
+        e.preventDefault()
+        return
+      }
       if (e.key === 'Backspace') {
         onBack()
         e.preventDefault()
@@ -233,7 +322,7 @@ export function useEquateGame() {
     return () => window.removeEventListener('keydown', onKey)
   }, [onDigit, onOp, onBack, onClear, isDigitAllowed])
   const nextPuzzle = useCallback(() => {
-    setPuzzle(randomPuzzle(4))
+    setPuzzle(randomPuzzle(6))
   }, [])
   return {
     active,
@@ -254,8 +343,6 @@ export function useEquateGame() {
     isDigitAllowed,
     onDigit,
     onOp,
-    onBack,
-    onClear,
     nextPuzzle,
   }
 }

@@ -5,8 +5,8 @@ import { ExprSlot } from './ExprSlot'
 
 export default function App() {
   const g = useEquateGame()
-  const leftClass = 'resVal' + (g.equal ? ' ok' : g.leftReady && g.rightReady ? ' err' : '')
-  const rightClass = 'resVal' + (g.equal ? ' ok' : g.leftReady && g.rightReady ? ' err' : '')
+  const leftClass = 'resVal'
+  const rightClass = 'resVal'
 
   return (
     <>

@@ -121,11 +121,17 @@ main {
   position: relative;
 }
 
+.results {
+  min-height: 24px;
+}
+
 /* Plain result values (no boxes) */
 .resVal {
   font-size: 16px;
   color: var(--muted);
   text-align: center;
+  opacity: 0.7;
+  min-height: 24px;
 }
 .resVal.ok {
   color: var(--ok);
@@ -187,36 +193,171 @@ main {
 }
 
 /* Green glow animation when expressions match */
-.slots.matched .slot {
-  animation: successGlow 1.5s ease-out;
+.slots.matched .slot:first-child {
+  animation: successGlowLeft 1.8s ease-out;
 }
 
-@keyframes successGlow {
+.slots.matched .slot:nth-child(2) {
+  animation: successGlowRight 1.8s ease-out;
+}
+
+.slots.matched .exprEq {
+  animation: successEqualSign 1.8s ease-out;
+}
+
+@keyframes successGlowLeft {
   0% {
     box-shadow: 0 0 0 rgba(52, 199, 89, 0);
     border-color: var(--line);
+    transform: scale(1);
   }
-  30% {
-    box-shadow: 0 0 20px rgba(52, 199, 89, 0.6), 0 0 40px rgba(52, 199, 89, 0.3);
+  25% {
+    box-shadow: 0 0 8px rgba(52, 199, 89, 0.15);
     border-color: var(--ok);
+    transform: scale(1.005);
   }
-  70% {
-    box-shadow: 0 0 15px rgba(52, 199, 89, 0.4), 0 0 30px rgba(52, 199, 89, 0.2);
+  35% {
+    box-shadow: 0 0 12px rgba(52, 199, 89, 0.2);
     border-color: var(--ok);
+    transform: scale(1.005);
+  }
+  50% {
+    box-shadow: 0 0 6px rgba(52, 199, 89, 0.12);
+    border-color: var(--ok);
+    transform: scale(1.002);
+  }
+  60% {
+    box-shadow: 0 0 0 rgba(52, 199, 89, 0);
+    border-color: var(--line);
+    transform: scale(1);
   }
   100% {
     box-shadow: 0 0 0 rgba(52, 199, 89, 0);
     border-color: var(--line);
+    transform: scale(1);
   }
 }
 
-/* Refresh icon positioned at right edge of the Right Expression box */
-/*
-.refresh{ width:34px; height:34px; border-radius:50%; border:1px solid var(--line);
-  background:#1b1b1b; color:#fff; display:flex; align-items:center; justify-content:center;
-  cursor:pointer; font-size:18px; line-height:1; }
-.refresh:hover{ border-color:#777 }
-.refreshSlots{ position:absolute; right:0; top:8px; } */ /* right-aligned to right slot edge */
+@keyframes successEqualSign {
+  0% {
+    color: var(--err);
+  }
+  35% {
+    color: var(--err);
+  }
+  45% {
+    color: var(--ok);
+    text-shadow: 0 0 8px rgba(52, 199, 89, 0.4);
+  }
+  65% {
+    color: var(--ok);
+    text-shadow: 0 0 4px rgba(52, 199, 89, 0.3);
+  }
+  100% {
+    color: var(--ok);
+    text-shadow: none;
+  }
+}
+
+/* Claude-style moving glow indicator */
+.slots.matched .exprEq::after {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  width: 50px;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(52, 199, 89, 0.2) 30%, 
+    rgba(52, 199, 89, 0.5) 50%, 
+    rgba(52, 199, 89, 0.2) 70%, 
+    transparent 100%);
+  transform: translateY(-50%);
+  animation: claudeGlow 2s ease-in-out;
+}
+
+@keyframes claudeGlow {
+  0% { 
+    transform: translateY(-50%) translateX(-20px);
+    opacity: 0;
+    width: 50px;
+    height: 2px;
+  }
+  50% { 
+    transform: translateY(-50%) translateX(20px);
+    opacity: 1;
+    width: 50px;
+    height: 2px;
+  }
+  100% { 
+    transform: translateY(-50%) translateX(20px);
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+}
+
+@keyframes successGlowRight {
+  0% {
+    box-shadow: 0 0 0 rgba(52, 199, 89, 0);
+    border-color: var(--line);
+    transform: scale(1);
+  }
+  55% {
+    box-shadow: 0 0 0 rgba(52, 199, 89, 0);
+    border-color: var(--line);
+    transform: scale(1);
+  }
+  70% {
+    box-shadow: 0 0 8px rgba(52, 199, 89, 0.15);
+    border-color: var(--ok);
+    transform: scale(1.005);
+  }
+  80% {
+    box-shadow: 0 0 12px rgba(52, 199, 89, 0.2);
+    border-color: var(--ok);
+    transform: scale(1.005);
+  }
+  95% {
+    box-shadow: 0 0 6px rgba(52, 199, 89, 0.12);
+    border-color: var(--ok);
+    transform: scale(1.002);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(52, 199, 89, 0);
+    border-color: var(--line);
+    transform: scale(1);
+  }
+}
+
+/* iPhone calculator-style refresh button */
+.refresh {
+  width: auto;
+  height: auto;
+  border: none;
+  background: transparent;
+  color: #FF9F0A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  padding: 4px;
+}
+
+.refresh:hover {
+  background: rgba(255, 159, 10, 0.1);
+  transform: scale(1.05);
+}
+
+.refresh:active {
+  transform: scale(0.95);
+  background: rgba(255, 159, 10, 0.2);
+}
 
 /* Keypad */
 .pad {

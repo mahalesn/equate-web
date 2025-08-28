@@ -45,7 +45,7 @@ export function Keypad(props: {
       {/* Row 4: Primitive operators */}
       {Op('+')}
       {Op('−')}
-      {Op('*')}
+      <button className="btn op multiply" onClick={() => props.onOp('*')}>*</button>
       {Op('÷')}
       
       {/* Row 5: Advanced operators */}

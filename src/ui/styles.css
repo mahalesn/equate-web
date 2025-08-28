@@ -5,15 +5,20 @@
   --tile: #1f1f1f;
   --line: #555;
   --num: #333;
-  --op: #0a84ff;
+  --op: #3B82F6;
+  --op-hover: #60A5FA;
+  --op-pressed: #2563EB;
+  --op-focus: rgba(147, 197, 253, 0.4);
   --util: #3a3a3a;
-  --ok: #34c759;
-  --err: #ff453a;
-  --accent: #0a84ff;
+  --ok: #22C55E;
+  --warning: #F59E0B;
+  --err: #EF4444;
+  --accent: #3B82F6;
   --gap: 20px;
   --slot-min: 200px;
-  --digitKey: #1d1d1d; /* ≈ #333 at 35% over #111 */
-  --digitText: #9a9a9a; /* default digit text */
+  --digitKey: #171B22;
+  --digitKeyActive: #222733;
+  --digitText: #556070;
 }
 * {
   box-sizing: border-box;
@@ -207,32 +212,32 @@ main {
 
 @keyframes successGlowLeft {
   0% {
-    box-shadow: 0 0 0 rgba(52, 199, 89, 0);
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0);
     border-color: var(--line);
     transform: scale(1);
   }
   25% {
-    box-shadow: 0 0 8px rgba(52, 199, 89, 0.15);
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.15);
     border-color: var(--ok);
     transform: scale(1.005);
   }
   35% {
-    box-shadow: 0 0 12px rgba(52, 199, 89, 0.2);
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.2);
     border-color: var(--ok);
     transform: scale(1.005);
   }
   50% {
-    box-shadow: 0 0 6px rgba(52, 199, 89, 0.12);
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.12);
     border-color: var(--ok);
     transform: scale(1.002);
   }
   60% {
-    box-shadow: 0 0 0 rgba(52, 199, 89, 0);
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0);
     border-color: var(--line);
     transform: scale(1);
   }
   100% {
-    box-shadow: 0 0 0 rgba(52, 199, 89, 0);
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0);
     border-color: var(--line);
     transform: scale(1);
   }
@@ -247,11 +252,11 @@ main {
   }
   45% {
     color: var(--ok);
-    text-shadow: 0 0 8px rgba(52, 199, 89, 0.4);
+    text-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
   }
   65% {
     color: var(--ok);
-    text-shadow: 0 0 4px rgba(52, 199, 89, 0.3);
+    text-shadow: 0 0 4px rgba(34, 197, 94, 0.3);
   }
   100% {
     color: var(--ok);
@@ -269,9 +274,9 @@ main {
   height: 2px;
   background: linear-gradient(90deg, 
     transparent 0%, 
-    rgba(52, 199, 89, 0.2) 30%, 
-    rgba(52, 199, 89, 0.5) 50%, 
-    rgba(52, 199, 89, 0.2) 70%, 
+    rgba(34, 197, 94, 0.2) 30%, 
+    rgba(34, 197, 94, 0.5) 50%, 
+    rgba(34, 197, 94, 0.2) 70%, 
     transparent 100%);
   transform: translateY(-50%);
   animation: claudeGlow 2s ease-in-out;
@@ -300,32 +305,32 @@ main {
 
 @keyframes successGlowRight {
   0% {
-    box-shadow: 0 0 0 rgba(52, 199, 89, 0);
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0);
     border-color: var(--line);
     transform: scale(1);
   }
   55% {
-    box-shadow: 0 0 0 rgba(52, 199, 89, 0);
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0);
     border-color: var(--line);
     transform: scale(1);
   }
   70% {
-    box-shadow: 0 0 8px rgba(52, 199, 89, 0.15);
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.15);
     border-color: var(--ok);
     transform: scale(1.005);
   }
   80% {
-    box-shadow: 0 0 12px rgba(52, 199, 89, 0.2);
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.2);
     border-color: var(--ok);
     transform: scale(1.005);
   }
   95% {
-    box-shadow: 0 0 6px rgba(52, 199, 89, 0.12);
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.12);
     border-color: var(--ok);
     transform: scale(1.002);
   }
   100% {
-    box-shadow: 0 0 0 rgba(52, 199, 89, 0);
+    box-shadow: 0 0 0 rgba(34, 197, 94, 0);
     border-color: var(--line);
     transform: scale(1);
   }
@@ -386,18 +391,36 @@ main {
   background: var(--digitKey);
   color: var(--digitText);
   font-weight: 600;
+  transition: all 0.2s ease;
 }
 
-/* Allowed digits pop (blue background) */
+/* Allowed digits pop (indigo background) */
 .btn.num.allowed {
   color: white;
   background: var(--op);
   font-weight: 700;
 }
 
+.btn.num.allowed:hover {
+  background: var(--op-hover);
+}
+
+.btn.num.allowed:active {
+  background: var(--op-pressed);
+}
+
+.btn.num.allowed:focus {
+  box-shadow: 0 0 0 3px var(--op-focus);
+}
+
+/* Active digit keys */
+.btn.num:not(.allowed):active {
+  background: var(--digitKeyActive);
+}
+
 /* Do NOT dim number keys when disabled — keep the same background */
 .btn.num[disabled] {
-  opacity: 0.35; /* cancel global dimming */
+  opacity: 0.35;
   filter: none;
   cursor: not-allowed;
 }
@@ -406,7 +429,31 @@ main {
   background: var(--tile);
   border: 2px solid var(--op);
   color: white;
+  transition: all 0.2s ease;
 }
+
+.btn.op:hover {
+  border-color: var(--op-hover);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.btn.op:active {
+  border-color: var(--op-pressed);
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.btn.op:focus {
+  box-shadow: 0 0 0 3px var(--op-focus);
+}
+
+/* Fix vertical centering for asterisk symbol */
+.btn.op.multiply {
+  line-height: 0.85;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .btn.util {
   background: var(--util);
 }

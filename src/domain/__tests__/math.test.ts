@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { parse } from '../parse'
 import { evaluate } from '../eval'
 import { Frac } from '../fraction'
-import { approxEqualFrac } from '../util'
+import { approxEqualFrac, equalIntegersOnly } from '../util'
 function val(s: string) {
   return evaluate(parse(s))
 }
@@ -14,6 +14,44 @@ describe('fraction basics', () => {
   it('adds', () => {
     const a = new Frac(1, 2).add(new Frac(1, 3))
     expect(a.toString()).toBe('5/6')
+  })
+  it('recognizes equivalent fractions as equal', () => {
+    const frac1 = new Frac(3, 4)  // 3/4
+    const frac2 = new Frac(6, 8)  // 6/8 reduces to 3/4
+    expect(frac1.toString()).toBe('3/4')
+    expect(frac2.toString()).toBe('3/4')
+    expect(approxEqualFrac(frac1, frac2)).toBe(true)
+  })
+  it('should reject fractional results in game context', () => {
+    // Mathematical fractions should be recognized as equal
+    expect(approxEqualFrac(val('3/4'), val('6/8'))).toBe(true)
+    
+    // But game should REJECT fractional solutions, even if mathematically equal
+    expect(equalIntegersOnly(val('3/4'), val('6/8'))).toBe(false) // REJECTED - both are fractions
+    expect(val('3/4').toString()).toBe('3/4') // Shows as fraction
+    expect(val('6/8').toString()).toBe('3/4') // Shows as fraction
+    
+    // Only whole integers should be accepted as valid game solutions
+    expect(val('8/4').toString()).toBe('2') // Shows as whole number
+    expect(val('6/3').toString()).toBe('2') // Shows as whole number
+    expect(equalIntegersOnly(val('8/4'), val('6/3'))).toBe(true) // ACCEPTED - both are integers
+  })
+  
+  it('validates integer-only equality function', () => {
+    // Both integers and equal -> ACCEPT
+    expect(equalIntegersOnly(new Frac(5), new Frac(5))).toBe(true)
+    expect(equalIntegersOnly(val('8/4'), val('6/3'))).toBe(true) // 2 = 2
+    
+    // Both fractions, even if equal -> REJECT  
+    expect(equalIntegersOnly(new Frac(3, 4), new Frac(6, 8))).toBe(false)
+    expect(equalIntegersOnly(val('3/4'), val('6/8'))).toBe(false)
+    
+    // One integer, one fraction -> REJECT
+    expect(equalIntegersOnly(new Frac(2), new Frac(6, 3))).toBe(true) // 2 = 2 (both integers)
+    expect(equalIntegersOnly(new Frac(2), new Frac(3, 4))).toBe(false) // integer ≠ fraction
+    
+    // Different integers -> REJECT
+    expect(equalIntegersOnly(new Frac(2), new Frac(3))).toBe(false)
   })
 })
 describe('parser + eval', () => {

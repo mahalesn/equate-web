@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Frac } from '../domain/fraction'
 import { parse } from '../domain/parse'
 import { evaluate } from '../domain/eval'
-import { approxEqualFrac } from '../domain/util'
+import { approxEqualFrac, equalIntegersOnly } from '../domain/util'
 
 function randomPuzzle(len = 6) {
   if (len !== 6) {
@@ -271,7 +271,7 @@ export function useEquateGame() {
   const rightValueStr = rightVal ? rightVal.toString() : rightExpr ? '?' : ''
   const leftReady = !!leftVal
   const rightReady = !!rightVal
-  const equal = leftReady && rightReady && approxEqualFrac(leftVal!, rightVal!)
+  const equal = leftReady && rightReady && equalIntegersOnly(leftVal!, rightVal!)
   const allDigitsConsumed = Object.keys(leftRemain).length === 0 && Object.keys(rightRemain).length === 0
   const win = equal && !!leftExpr && !!rightExpr && allDigitsConsumed
   const [winTick, setWinTick] = useState(false)

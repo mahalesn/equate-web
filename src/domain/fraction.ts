@@ -56,6 +56,9 @@ export class Frac {
   toString() {
     return this.d === 1n ? this.n.toString() : `${this.n}/${this.d}`
   }
+  isInteger() {
+    return this.d === 1n
+  }
 }
 function gcd(a: bigint, b: bigint) {
   while (b) {

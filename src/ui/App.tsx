@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { LandingPage } from './LandingPage'
 import { Equator } from './Equator'
 
@@ -10,6 +10,11 @@ export default function App() {
   const navigateToEquator = () => {
     setCurrentView('equator')
   }
+
+  useEffect(() => {
+    // Update body class based on current view
+    document.body.className = currentView
+  }, [currentView])
 
   if (currentView === 'equator') {
     return <Equator />

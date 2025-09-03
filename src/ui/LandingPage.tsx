@@ -1,5 +1,5 @@
 import React from 'react'
-import logoImage from '../assets/equate-logo.png'
+import logoImage from '../assets/equate-logo.svg'
 
 interface LandingPageProps {
   onPlayAsGuest?: () => void
@@ -20,27 +20,22 @@ export function LandingPage({ onPlayAsGuest }: LandingPageProps) {
       
       <h1 id="title">Equate</h1>
       <p className="subtitle">Your daily math duels!</p>
-
       <section className="card" aria-labelledby="howto">
         <h2 id="howto">How to play</h2>
-        <p>Make left side digits equal to right side digits through expressions</p>
-        <ul>
-          <li>Can use each of the puzzle digits only once</li>
-          <li>Can't join digits, 1 &amp; 2 ≠ 12</li>
-          <li>And yes, whole integers only; roots must be perfect.</li>
-        </ul>
+        <p>Make left side digits equal to right side digits through expressions using <span className="examples"> <b> + −  *  ÷  </b> </span> </p>
 
         <div className="examples">
           <p>E.g. You can equate <b>1 2 3</b> with <b>4 5 6</b> using:</p>
-
-          <p className="eq">
-            <b>1 + (2 ÷ 3) = (5 − 4) + 6</b>
+          <ul className="eq">
+            <b> 1 + (2 ÷ 3) = (5 − 4) + 6</b>
             → This will equate both sides to <b>7</b>
-          </p>
-          <p className="eq">
+            </ul>
+          <ul className="eq">
             <b>3 − 2 + 1 = 6 ÷ √(4 + 5)</b>
             → This will equate both sides to <b>2</b>
-          </p>
+          </ul>
+          <p> Please note, you can use each of the puzzle digits only once, you can't join digits (so 1 &amp; 2 ≠ 12),
+            and yes, whole integers only; roots must be perfect.</p>
         </div>
       </section>
 

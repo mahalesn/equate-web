@@ -1,0 +1,52 @@
+name: Feature request
+description: Propose a new capability or enhancement
+title: "[Feature]: "
+labels: ["type:feature"]
+body:
+- type: textarea
+id: problem
+attributes:
+label: Problem/Opportunity
+description: What problem does this feature solve?
+placeholder: "When I..., I want..., so that..."
+validations:
+required: true
+- type: textarea
+id: proposal
+attributes:
+label: Proposed solution
+description: Outline the solution and any alternatives
+validations:
+required: true
+- type: textarea
+id: acceptance
+attributes:
+label: Acceptance criteria
+description: Bullet points with clear, testable outcomes
+placeholder: "- [ ] ..."
+- type: dropdown
+id: priority
+attributes:
+label: Priority
+options:
+- priority:P0
+- priority:P1
+- priority:P2
+validations:
+required: true
+- type: dropdown
+id: area
+attributes:
+label: Area
+multiple: true
+options:
+- area:frontend
+- area:mobile
+- area:infra
+- area:data
+- area:auth
+- area:pwa
+- area:seo
+- area:ci
+- area:pm
+- area:repo

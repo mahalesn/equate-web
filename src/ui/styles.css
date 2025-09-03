@@ -48,7 +48,7 @@ body {
 body.landing {
   background: #dfe8f2ff;
   color: #334155;
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+  font-family: var(--font-serif);
   line-height: 1.55;
   display: flex;
   flex-direction: row;
@@ -75,11 +75,30 @@ header {
   position: relative;
 }
 .brand {
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  font-size: 30px;
+  font-family: var(--font-serif);
+  font-size: 22px; /*clamp(36px, 5vw, 56px); */
+  line-height: 1;/*1.1;*/
+  color: var(--muted); /*#fff;*/
+  margin: 0 0 8px;
+  /*font-weight: 700;*/
   text-align: center;
-  margin-bottom: 2px;
+  font-style: italic;
+  letter-spacing: 0.09em;
+}
+
+.with {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 22px;
+  color: var(--muted);
+  letter-spacing: 0.09em;
+  position: relative;
+}
+.with::before,
+.with::after {
+  content: '·';
+  margin: 0 0.35rem;
+  opacity: 0.7;
 }
 /* Center digits; make room so the button doesn't overlap */
 
@@ -101,7 +120,10 @@ header {
   align-items: baseline;
   gap: 10px;
   font-size: 22px;
+  font-family: var(--font-mono);
   letter-spacing: 0.2rem;
+  width: 330px;
+  justify-content: center;
 }
 
 /* Refresh lives in the right column, flush to the edge */
@@ -110,19 +132,7 @@ header {
   justify-self: end;
 }
 /*.puzzle{ display:flex; align-items:baseline; gap:10px; font-size:22px; letter-spacing:.2rem; justify-content:center; margin-bottom:16px; } */
-.with {
-  font-family: ui-serif, Georgia, 'Times New Roman', serif;
-  font-style: italic;
-  color: var(--muted);
-  letter-spacing: 0.06em;
-  position: relative;
-}
-.with::before,
-.with::after {
-  content: '·';
-  margin: 0 0.35rem;
-  opacity: 0.7;
-}
+
 
 /* Main layout */
 main {
@@ -152,7 +162,8 @@ main {
 
 /* Plain result values (no boxes) */
 .resVal {
-  font-size: 16px;
+  font-size: 18px;
+  font-family: var(--font-mono);
   color: var(--muted);
   text-align: center;
   opacity: 0.7;
@@ -170,7 +181,7 @@ main {
 /* Expression slots */
 .slot {
   width: 100%;
-  min-height: 64px;
+  min-height: 50px;
   background: var(--tile);
   border: 2px solid var(--line);
   border-radius: 12px;
@@ -178,7 +189,8 @@ main {
   align-items: center;
   justify-content: center;
   padding: 10px 14px;
-  font-size: 20px;
+  font-size: 18px;
+  font-family: var(--font-mono);
   transition:
     border-color 0.15s,
     box-shadow 0.15s;
@@ -198,7 +210,8 @@ main {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  font-size: 22px;
+  font-size: 27px;
+  font-family: var(--font-mono);
   pointer-events: none;
   font-weight: bold;
   transition: color 0.3s ease;
@@ -391,13 +404,14 @@ main {
   gap: 12px;
   margin-top: 2px;
   width: 100%;
-  max-width: 528px;
+  max-width: 330px;
 }
 .btn {
   height: 56px;
   border: none;
   border-radius: 12px;
-  font-size: 20px;
+  font-size: 18px;
+  font-family: var(--font-mono);
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -512,7 +526,7 @@ main {
 
 /* Title */
 h1{
-  font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+  font-family: var(--font-serif);
   font-size: clamp(36px, 5vw, 56px);
   line-height:1.1;
   color:#0c0e10;
@@ -521,6 +535,7 @@ h1{
 }
 /* SubTitle */
 .subtitle{
+  font-family: var(--font-serif);
   font-size:18px;
   margin:0 0 28px;
   opacity:.85;
@@ -543,31 +558,35 @@ h1{
   text-align:center;
   font-weight:700;
   color:#0c0e10;
-  font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+  font-family: var(--font-serif);
   font-size:18px;
 }
 /* Instructions */
-.card p{ margin:10px 0; color:#4b5563; }
+.card p{ font-family: var(--font-serif); margin:10px 0; color:#4b5563; }
 .card ul{
+  font-family: var(--font-serif);
   margin:8px 0 12px 18px;
   padding:0;
 }
-.card li{ margin:6px 0; color:#4b5563; }
+.card li{ font-family: var(--font-serif); margin:6px 0; color:#4b5563; }
 
 /* Example Highlights */
 .examples{
+  font-family: var(--font-serif);
   margin-top:10px;
-  font-size:15px;
   color:#4b5563;
 }
 .examples b{
+  font-family: var(--font-mono);
   color:#0c0e10;
 }
 .eq{
+  font-family: var(--font-mono);
   margin:8px 0;
   color:#4b5563;
 }
 .eq b{
+  font-family: var(--font-mono);
   color:#0c0e10;
 }
 
@@ -582,6 +601,7 @@ h1{
 
 /* Button Base */
 .btn{
+  font-family: var(--font-serif);
   appearance:none;
   border-radius:999px;
   padding:12px 22px;

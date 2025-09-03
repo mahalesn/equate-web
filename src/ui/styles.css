@@ -150,7 +150,7 @@ main {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(var(--slot-min), 1fr));
-  gap: var(--gap);
+  gap: 24px;
   align-items: center;
   justify-items: stretch;
   position: relative;
@@ -210,7 +210,7 @@ main {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  font-size: 27px;
+  font-size: 25px;
   font-family: var(--font-mono);
   pointer-events: none;
   font-weight: bold;
